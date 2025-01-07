@@ -1,6 +1,5 @@
 import locale
 import customtkinter as ctk
-import hashlib
 import ttkbootstrap as ttk 
 from ttkbootstrap.constants import *
 from ttkbootstrap.validation import *
