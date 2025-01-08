@@ -1,6 +1,7 @@
 import locale
 import customtkinter as ctk
 import ttkbootstrap as ttk 
+from PIL import Image, ImageTk
 from ttkbootstrap.constants import *
 from ttkbootstrap.validation import *
 
@@ -20,9 +21,14 @@ class RegisterWindow(ttk.Window):
 
         # Title Frame
         self.title_frame = ttk.Label(self.main_frame, text='New Here?\nRegister Below!', style=(INVERSE,LIGHT), font=('Century Schoolbook', 15, 'bold'), justify='center')
-        self.title_frame.place(relx=0.5, rely=0.2, anchor='center')
+        self.title_frame.place(relx=0.5, rely=0.4, anchor='center')
 
-        #
+        # Logo
+        logo = Image.open("../assets/logo2.png")
+        resize_logo = logo.resize((75,45), Image.Resampling.LANCZOS)
+        self.logo = ImageTk.PhotoImage(image=resize_logo)
+        self.label_logo = ttk.Label(self.main_frame, image=self.logo, style='inverse-light')
+        self.label_logo.place(relx=0.5, rely=0.15, anchor='center')
     
     def screen_size(self, screen_height, screen_width, height_ratio=0.4, width_ratio=0.65):
         """Calcute the size of the window"""
