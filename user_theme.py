@@ -1,4 +1,24 @@
-Paste this to user.py in ttk theme library
+import tkinter
+from tkinter import font
+import customtkinter
+
+root_tk = customtkinter.CTk()
+check_var = tkinter.StringVar("on")
+
+def checkbox_event():
+    print("checkbox toggled, current value:", check_var.get())
+
+checkbox = customtkinter.CTkCheckBox(master=root_tk, text="CTkCheckBox", command=checkbox_event,
+                                     variable=check_var, onvalue="on", offvalue="off")
+checkbox.pack(padx=20, pady=10)
+
+
+
+
+
+
+
+"""Paste this to user.py in ttk theme library
 USER_THEMES = {
     "dark_v2": {
         "type": "dark",
@@ -21,4 +41,5 @@ USER_THEMES = {
             "active": "#282828"
         }
     }
-}
+}"""
+
