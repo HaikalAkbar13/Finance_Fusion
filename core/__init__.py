@@ -1,1 +1,1 @@
-import validators
+from .validators import PasswordValidation

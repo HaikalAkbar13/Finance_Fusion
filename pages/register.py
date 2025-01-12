@@ -1,66 +1,101 @@
-import locale
-import core
 import customtkinter as ctk
-import ttkbootstrap as ttk 
 from PIL import Image, ImageTk
-from ttkbootstrap.constants import *
-from ttkbootstrap.validation import *
+from tkinter import messagebox
+from core.validators import PasswordValidation
 
 
-class RegisterWindow(ttk.Window):
-    def __init__(self, title="Finance Fusion Register", themename="dark_v2", iconphoto='../assets/logo2.png'):
-        super().__init__(title, themename, iconphoto)
-        self.screen_width = self.winfo_screenwidth()
-        self.screen_height = self.winfo_screenheight()
-        self.window_width, self.window_height = self.screen_size(screen_width= self.screen_width, screen_height=self.screen_height)
-        self.geometry(f'{self.window_width}x{self.window_height}')
-        self.position_center()
+"""
+Add Show Password
+Add Register Button
+Add Logo at the Top
+"""
+
+class RegisterWindow(ctk.CTkToplevel):
+    def __init__(self, master):
+        super().__init__(master=master)
+        self.withdraw()  # Ensure window starts hidden
+        self.title("Finance Fusion Register")
+        self.geometry(self.center_window(800, 750))
+
+        """Set The GUI"""
+        # Background
+        bg = Image.open("./assets/bg.png")
+        img_bg = ctk.CTkImage(dark_image=bg, size=(800, 750))
+        self.bg_label = ctk.CTkLabel(self, image=img_bg, text="")
+        self.bg_label.pack(fill="both", expand=True)
 
         # Main Frame
-        self.main_frame = ttk.Frame(self, style=LIGHT)
-        self.main_frame.place(anchor='center', relwidth=0.6, relheight=0.7, relx=0.5, rely=0.5)
+        self.main_frame = ctk.CTkFrame(self.bg_label, corner_radius=10)
+        self.main_frame.place(relx=0.5, rely=0.5, relwidth=0.5, relheight=0.7, anchor="center")
+
+        # Title Label
+        self.title_label = ctk.CTkLabel(self.main_frame, text="Register", font=("Century", 30, "bold"))
+        self.title_label.place(relx=0.5, rely=0.1, anchor="center")
 
         # Logo
-        logo = Image.open("../assets/logo2.png")
-        resize_logo = logo.resize((65, 45), Image.Resampling.LANCZOS)
-        self.logo = ImageTk.PhotoImage(image=resize_logo)
-        self.label_logo = ttk.Label(self.main_frame, image=self.logo, style='inverse-light')
-        self.label_logo.place(relx=0.5, rely=0.15, anchor='center')
+        logo = ctk.CTkImage(Image.open("./assets/logo2.png"), size=(100, 75))
+        self.logo_label = ctk.CTkLabel(self.main_frame, image=logo, text="")
+        self.logo_label.place(relx=0.5, rely=0.25, anchor="center")
 
-        # Title Frame
-        self.title_frame = ttk.Label(self.main_frame, text='New Here?\nRegister Below!', style=(INVERSE, LIGHT), font=('Century Schoolbook', 15, 'bold'), justify='center')
-        self.title_frame.place(relx=0.5, rely=0.28, anchor='center')
+        # Username Entry
+        self.user_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Username", font=("Century", 13), corner_radius=20)
+        self.user_entry.place(relx=0.5, rely=0.4, anchor="center", relwidth=0.9, relheight=0.065)
 
-        # User Name
-        self.label_user_name = ttk.Label(self.main_frame, style=(INVERSE, LIGHT), text='User Name', font=('Century Schoolbook', 10, 'bold'), justify='left')
-        self.label_user_name.place(relx=0.19, rely=0.35, anchor='n')
-        self.entry_user_name = ttk.Entry(self.main_frame, style=(SUCCESS), font=('Century Schoolbook', 8, 'bold'))
-        self.entry_user_name.place(relx=0.47, rely=0.40, anchor='n', relwidth=0.8)
+        # Password Entry
+        self.pass_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Password", show="*", font=("Century", 13), corner_radius=20)
+        self.pass_entry.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.065)
 
-        # User Password
-        self.label_password = ttk.Label(self.main_frame, style=(INVERSE, LIGHT), text='Password', font=('Century Schoolbook', 10, 'bold'), justify='left')
-        self.label_password.place(relx=0.19, rely=0.49, anchor='n')
-        self.entry_password = ttk.Entry(self.main_frame, style=(SUCCESS), font=('Century Schoolbook', 8, 'bold'), show='*', validate='focus', validatecommand=core.validators.validate_entry(self.entry_password.cget()))
-        self.entry_password.place(relx=0.47, rely=0.55, anchor='n', relwidth=0.8)
+        # Confirm Password Entry
+        self.confirm_pass_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Confirm Password", show="*",
+                                               font=("Century", 13), corner_radius=20)
+        self.confirm_pass_entry.place(relx=0.5, rely=0.6, anchor="center", relwidth=0.9, relheight=0.065)
 
         # Show Password
-        self.variable_pass = ttk.BooleanVar()
-        self.show_password = ttk.Checkbutton(self.main_frame, text="Show Password", variable=self.variable_pass, command=self.toggle_password_visibility)
-        self.show_password.place(relx=0.09, rely=0.62)
+        self.var = ctk.StringVar(self, "off")
+        self.show_pass = ctk.CTkCheckBox(self.main_frame, width=50, text="Show Passowrd", font=("Century", 12), onvalue="on", offvalue="off", variable=self.var, command=lambda:self.showpass(self.var.get()))
+        self.show_pass.place(relx=0.38, rely=0.69, anchor='e')
 
-    def toggle_password_visibility(self):
-        if self.variable_pass.get():
-            self.entry_password.config(show='')
+        # Register Button
+        self.register_button = ctk.CTkButton(self.main_frame, text="Register", font=("Century", 15), corner_radius=20, command=lambda:self.pass_validation(self.pass_entry.get()))
+        self.register_button.place(relx=0.5, rely=0.8, anchor='center', relwidth=0.5, relheight=0.065)
+
+        # Back Button
+        self.back_button = ctk.CTkButton(self.main_frame, text="Back", font=("Century", 15),
+                                         command=self.close_register_window, corner_radius=20)
+        self.back_button.place(relx=0.5, rely=0.9, anchor="center", relwidth=0.5, relheight=0.065)
+
+        self.wm_protocol("WM_DELETE_WINDOW", self.master.quit)
+        
+    def showpass(self, value):
+        if value == "on":
+            self.pass_entry.configure(show="")
+            self.confirm_pass_entry.configure(show="")
         else:
-            self.entry_password.config(show='*')
+            self.pass_entry.configure(show="*")
+            self.confirm_pass_entry.configure(show="*")
+    
+    def pass_validation(self, value):
+        password1 = self.pass_entry.get()
+        password2 = self.confirm_pass_entry.get()
+        if password1 == password2:
+            if PasswordValidation.validate_entry(value):
+                messagebox.showinfo("Berhasil Register", "Anda telah berhasil register\nSilahkan kembali ke Laman Login")
+            else:
+                messagebox.showwarning("Password Eror", 
+                                       "Password anda tidak memenuhi kriteria :\n1. Minimal 7 hingga 15 Karakter\n2. Kombinasi Huruf Kapital dan Angka\n3.Mengandung Karakter Unik (!#@$)")
+        else:
+            messagebox.showwarning("Password Eror", "Password yang anda masukkan tidak sama\nSilahkan masukkan ulang")    
 
-    def screen_size(self, screen_width, screen_height, height_ratio=0.8, width_ratio=0.5):
-        """Calculate the size of the window"""
-        width = int(screen_width * width_ratio)
-        height = int(screen_height * height_ratio)
-        return width, height
 
+    def close_register_window(self):
+        self.withdraw()
+        self.master.deiconify()
+        
 
-if __name__ == '__main__':
-    app = RegisterWindow()
-    app.mainloop()
+    @staticmethod
+    def center_window(width, height):
+        screen_width = ctk.CTk().winfo_screenwidth()
+        screen_height = ctk.CTk().winfo_screenheight()
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+        return f"{width}x{height}+{x}+{y}"
