@@ -1,45 +1,39 @@
-import tkinter
-from tkinter import font
-import customtkinter
-
-root_tk = customtkinter.CTk()
-check_var = tkinter.StringVar("on")
-
-def checkbox_event():
-    print("checkbox toggled, current value:", check_var.get())
-
-checkbox = customtkinter.CTkCheckBox(master=root_tk, text="CTkCheckBox", command=checkbox_event,
-                                     variable=check_var, onvalue="on", offvalue="off")
-checkbox.pack(padx=20, pady=10)
+from decouple import config
+import bcrypt
+import customtkinter as ctk
 
 
+class LoadingWidget(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        ctk.set_default_color_theme('dark-blue')
+        self.resizable(width=False, height=False)
+        self._set_appearance_mode("dark")
+        self.title("Finance Fusion Login")
+        self.geometry(self.center_window(350, 350))
+
+        """
+        Create a Toplevel Window while connecting to database and 
+        execute login logic
+        """
+
+        # UI
+        self.label = ctk.CTkLabel(self, text="Please Wait\nLogin in System", font=("Century", 15, "bold"))
+        self.label.place(relx=0.5, rely=0.39, anchor='center')
+        
+        self.progress = ctk.CTkProgressBar(self, mode="indeterminate", corner_radius=20, height=10)
+        self.progress.place(relx=0.5, rely=0.5, relwidth=0.6, anchor="center")
+    
 
 
+    def center_window(self, width, height):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+        return f"{width}x{height}+{x}+{y}"
+    
 
-
-
-"""Paste this to user.py in ttk theme library
-USER_THEMES = {
-    "dark_v2": {
-        "type": "dark",
-        "colors": {
-            "primary": "#31304d",
-            "secondary": "#555555",
-            "success": "#257180",
-            "info": "#e1d7c6",
-            "warning": "#ff8800",
-            "danger": "#800000",
-            "light": "#ADAFAE",
-            "dark": "#31304d",
-            "bg": "#060606",
-            "fg": "#ffffff",
-            "selectbg": "#5f8670",
-            "selectfg": "#f0ece5",
-            "border": "#060606",
-            "inputfg": "#e2dad6",
-            "inputbg": "#191919",
-            "active": "#282828"
-        }
-    }
-}"""
-
+if __name__ == '__main__':
+    app = LoadingWidget()
+    app.mainloop()
